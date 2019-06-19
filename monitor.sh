@@ -2,20 +2,25 @@
 
 session="monitor"
 
-#todo check if tmux server is already running?
+exist=$(tmux list-session 2>/dev/null | grep $session | wc -l)
 
-tmux start-server
+if [ "$exist" -eq "0" ]; then
 
-#todo check if session already exist?
-tmux new-session -d -s $session
-tmux selectp -t 1
-tmux send-keys "htop" C-m
-tmux splitw -h
-tmux selectp -t 2
-tmux splitw -v
-tmux selectp -t 3
-tmux send-keys "nload" C-m
-tmux selectp -t 2
+    tmux start-server #there's no harm in calling to start a tmux server when it's already running
+    tmux new-session -d -s $session
+    tmux selectp -t 1
+    tmux send-keys "htop" C-m
+    tmux splitw -h
+    tmux selectp -t 2
+    tmux splitw -v
+    tmux selectp -t 3
+    tmux send-keys "nload" C-m
+    tmux splitw -v
+    tmux selectp -t 4
+    tmux send-keys "watch -n 1800 df -h /" C-m
 
-#tmux attach-session -t $session
+fi
+
+
+tmux attach-session -t $session
 
